@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+  namespace: efk
+data:
+  fluentd.conf: |
+    <source>
+      @type kubernetes
+      @id input_kubernetes
+      @label @FLUENTD
+      tag kubernetes.*
+      <parse>
+        @type json
+        time_key time
+      </parse>
+      <storage>
+        @type local
+      </storage>
+      <buffer>
+        @type memory
+      </buffer>
+    </source>
+
+    <match kubernetes.**>
+      @type elasticsearch
+      @id output_elasticsearch
+      host elasticsearch
+      port 9200
+      logstash_format true
+      logstash_prefix fluentd
+      <buffer>
+        @type memory
+      </buffer>
+    </match>
